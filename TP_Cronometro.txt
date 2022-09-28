@@ -1,0 +1,151 @@
+Trabajo Practico Numero 1
+
+El cronometro anda pulsando cada vez el pulsador de pausa 
+link de tinkerrcad
+
+https://www.tinkercad.com/things/daZm0iQJ5nX-cronometrobinario/editel?sharecode=2ZNoWl87nyo042pH02TZ3UJK2IOt-mVmeetcWqgMNZ8
+
+void apagarAllLeds();
+#define TIEMPO 1023
+
+void setup()
+{
+  Serial.begin(9600);
+  
+  pinMode(4, OUTPUT);
+  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
+  pinMode(7, OUTPUT);
+  pinMode(8, OUTPUT);
+  pinMode(9, OUTPUT);
+  pinMode(10, OUTPUT);
+  pinMode(11, OUTPUT);
+  pinMode(12, OUTPUT);
+  pinMode(13, OUTPUT);
+  
+  pinMode(2, INPUT);
+  pinMode(3, INPUT);
+}
+
+int pulsadorReset = 0;
+int pulsadorAntesOn_Off = 0;
+int segundosAnterior=0;
+int cronometro=0;
+int boton;
+
+
+void loop()
+{
+  int pulsadorResetAhora= digitalRead(2);
+  int PulsadorUpAhoraOn_Off= digitalRead(3);
+  int segundos=millis()/1000;
+     
+  if(segundosAnterior!= segundos && PulsadorUpAhoraOn_Off == 1 && pulsadorAntesOn_Off == 0)
+  { 
+         
+    cronometro++;
+     Serial.println(cronometro);
+    
+    switch(cronometro){
+     case 1:
+       digitalWrite(4, LOW);
+       digitalWrite(5, LOW);
+       digitalWrite(6, LOW);
+       digitalWrite(7, HIGH);
+      break;
+      case 2:
+       digitalWrite(4, LOW);
+       digitalWrite(5, LOW);
+       digitalWrite(6, HIGH);
+       digitalWrite(7, LOW);
+      break;
+      case 3:
+       digitalWrite(4, LOW);
+       digitalWrite(5, LOW);
+       digitalWrite(6, HIGH);
+       digitalWrite(7, HIGH);
+      break;
+      case 4:
+       digitalWrite(7, LOW);
+       digitalWrite(8, HIGH);
+       digitalWrite(9, LOW);
+       digitalWrite(10, LOW);
+      break;
+      case 5:
+       digitalWrite(8, LOW);
+       digitalWrite(9, HIGH);
+       digitalWrite(10, LOW);
+       digitalWrite(11, HIGH);
+      break;
+      case 6:
+       digitalWrite(9, LOW);
+       digitalWrite(10, HIGH);
+       digitalWrite(11, HIGH);
+       digitalWrite(12, LOW);
+      break;
+      case 7:
+       digitalWrite(9, LOW);
+       digitalWrite(10, HIGH);
+       digitalWrite(11, HIGH);
+       digitalWrite(12, HIGH);
+      break;
+      case 8:
+       digitalWrite(10, HIGH);
+       digitalWrite(11, LOW);
+       digitalWrite(12, LOW);
+       digitalWrite(13, LOW);
+      break;
+      case 9:
+       digitalWrite(10, HIGH);
+       digitalWrite(11, LOW);
+       digitalWrite(12, LOW);
+       digitalWrite(13, HIGH);
+      break;
+      case 10:
+       digitalWrite(4, HIGH);
+       digitalWrite(5, LOW);
+       digitalWrite(6, HIGH);
+       digitalWrite(7, LOW);
+      break; 
+      
+     }
+    boton=millis();
+   
+    }else if(PulsadorUpAhoraOn_Off == 0 && pulsadorAntesOn_Off==1)
+ 	{
+           
+     apagarAllLeds();
+       
+    }
+  
+    
+    if(pulsadorResetAhora== 0 && pulsadorReset == 1 )
+    { 
+      
+      cronometro=0;
+      apagarAllLeds();
+      
+    }
+   pulsadorReset=pulsadorResetAhora;
+   pulsadorAntesOn_Off=PulsadorUpAhoraOn_Off;
+ 
+   
+  
+ delay(15); 
+}
+
+
+
+void apagarAllLeds()
+{
+  digitalWrite(4, LOW);
+  digitalWrite(5, LOW);
+  digitalWrite(6, LOW);
+  digitalWrite(7, LOW);
+  digitalWrite(8, LOW);
+  digitalWrite(9, LOW);
+  digitalWrite(10, LOW);
+  digitalWrite(11, LOW);
+  digitalWrite(12, LOW);
+  digitalWrite(13, LOW);
+}
