@@ -1,12 +1,40 @@
 Trabajo Practico Numero 1
 
-El cronometro anda pulsando cada vez el pulsador de pausa 
-link de tinkerrcad
+
 
 https://www.tinkercad.com/things/daZm0iQJ5nX-cronometrobinario/editel?sharecode=2ZNoWl87nyo042pH02TZ3UJK2IOt-mVmeetcWqgMNZ8
 
+// C++ code
+//TP 1 Cronometro Binario
+/*Al iniciar el funcionamiento, 
+*el cronómetro debe estar en pausa.
+*Al presionar el botón de Pausa, se debe iniciar el cronómetro.
+Los LED apagados representan un 0, y los encendidos representan un 1
+*De presionar nuevamente, el botón de pausa, se debe detener la ejecución, teniendo en cuenta que si hubiesen transcurrido 900 milisegundos,
+al presionar el botón para continuar deberían transcurrir 100 milisegundos antes de que se enciendan los siguientes LED
+*El botón de Reset debe reiniciar el cronómetro a 0 segundos
+
+
+
+*/
+//chequea el funcionamiento de los botones si estan pulsados o no, funcion antirrebote
+// si apreta reset apaga todos los leds y coloca el cronometro en 0
+void chequearBotones(); 
+//funcio que apaga todos los leds
 void apagarAllLeds();
-#define TIEMPO 1023
+//
+void decimalAbinario_leds(int cronometro, int LED_TOTAL);
+
+//define para maximos, leds y delays para millis
+#define COMBINACION 1024
+#define BOTON_RESET 2
+#define BOTON_ON_OFF 3
+#define LED_INICIO 4
+#define LED_FIN 13
+#define DELAY 100
+#define DELAY_CONTADOR 1000
+
+#define LED_TOTAL (LED_FIN - LED_INICIO + 1) 
 
 void setup()
 {
@@ -23,129 +51,111 @@ void setup()
   pinMode(12, OUTPUT);
   pinMode(13, OUTPUT);
   
-  pinMode(2, INPUT);
-  pinMode(3, INPUT);
+  pinMode(BOTON_RESET, INPUT);
+  pinMode(BOTON_ON_OFF, INPUT);
+  
 }
 
 int pulsadorReset = 0;
 int pulsadorAntesOn_Off = 0;
 int segundosAnterior=0;
 int cronometro=0;
-int boton;
+int estado_boton;
+int tiempo_Leds;
+int tiempo_contador;
+int pausa=1;
 
+const int leds_array[LED_TOTAL] = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
 
 void loop()
 {
-  int pulsadorResetAhora= digitalRead(2);
-  int PulsadorUpAhoraOn_Off= digitalRead(3);
+ 
   int segundos=millis()/1000;
      
-  if(segundosAnterior!= segundos && PulsadorUpAhoraOn_Off == 1 && pulsadorAntesOn_Off == 0)
+  if(millis() - estado_boton >= DELAY)
   { 
-         
-    cronometro++;
-     Serial.println(cronometro);
-    
-    switch(cronometro){
-     case 1:
-       digitalWrite(4, LOW);
-       digitalWrite(5, LOW);
-       digitalWrite(6, LOW);
-       digitalWrite(7, HIGH);
-      break;
-      case 2:
-       digitalWrite(4, LOW);
-       digitalWrite(5, LOW);
-       digitalWrite(6, HIGH);
-       digitalWrite(7, LOW);
-      break;
-      case 3:
-       digitalWrite(4, LOW);
-       digitalWrite(5, LOW);
-       digitalWrite(6, HIGH);
-       digitalWrite(7, HIGH);
-      break;
-      case 4:
-       digitalWrite(7, LOW);
-       digitalWrite(8, HIGH);
-       digitalWrite(9, LOW);
-       digitalWrite(10, LOW);
-      break;
-      case 5:
-       digitalWrite(8, LOW);
-       digitalWrite(9, HIGH);
-       digitalWrite(10, LOW);
-       digitalWrite(11, HIGH);
-      break;
-      case 6:
-       digitalWrite(9, LOW);
-       digitalWrite(10, HIGH);
-       digitalWrite(11, HIGH);
-       digitalWrite(12, LOW);
-      break;
-      case 7:
-       digitalWrite(9, LOW);
-       digitalWrite(10, HIGH);
-       digitalWrite(11, HIGH);
-       digitalWrite(12, HIGH);
-      break;
-      case 8:
-       digitalWrite(10, HIGH);
-       digitalWrite(11, LOW);
-       digitalWrite(12, LOW);
-       digitalWrite(13, LOW);
-      break;
-      case 9:
-       digitalWrite(10, HIGH);
-       digitalWrite(11, LOW);
-       digitalWrite(12, LOW);
-       digitalWrite(13, HIGH);
-      break;
-      case 10:
-       digitalWrite(4, HIGH);
-       digitalWrite(5, LOW);
-       digitalWrite(6, HIGH);
-       digitalWrite(7, LOW);
-      break; 
-      
-     }
-    boton=millis();
    
-    }else if(PulsadorUpAhoraOn_Off == 0 && pulsadorAntesOn_Off==1)
- 	{
-           
-     apagarAllLeds();
-       
-    }
+     chequearBotones();   
+     estado_boton=millis();
   
+  }
+  if(!pausa){
     
-    if(pulsadorResetAhora== 0 && pulsadorReset == 1 )
-    { 
-      
-      cronometro=0;
-      apagarAllLeds();
-      
+       
+    cronometro++;
+    Serial.print(cronometro);
+    
+    if(millis()- tiempo_Leds >= DELAY ){
+    
+    decimalAbinario_leds(cronometro,LED_TOTAL);
+           
+      tiempo_Leds= millis();
     }
-   pulsadorReset=pulsadorResetAhora;
-   pulsadorAntesOn_Off=PulsadorUpAhoraOn_Off;
- 
-   
+   if(millis()- tiempo_contador >= DELAY_CONTADOR)
+    
+      
+      if(cronometro >=COMBINACION){
+        cronometro=0;
+        pausa=1;
+       decimalAbinario_leds(cronometro,LED_TOTAL);
+        
+      }
+   tiempo_contador=millis();
+  }
+  
+  
   
  delay(15); 
 }
 
+void chequearBotones() {
+
+  int pulsadorResetAhora = digitalRead(BOTON_RESET);
+  int PulsadorUpAhoraOn_Off= digitalRead(BOTON_ON_OFF);
+
+
+  if(PulsadorUpAhoraOn_Off && !pulsadorAntesOn_Off) // ANTIRREBOTE
+  {
+	pausa = !pausa;
+    digitalWrite(BOTON_ON_OFF,pausa);
+   }
+  pulsadorAntesOn_Off= pulsadorAntesOn_Off;
+
+  if (pulsadorResetAhora && !pulsadorReset) //ANTIRREBOTE
+  {
+	digitalWrite(BOTON_RESET,1);
+    pausa=1;
+    cronometro = 0;
+    apagarAllLeds();
+    
+  }
+  pulsadorReset= pulsadorResetAhora;
+}
 
 
 void apagarAllLeds()
 {
-  digitalWrite(4, LOW);
-  digitalWrite(5, LOW);
-  digitalWrite(6, LOW);
-  digitalWrite(7, LOW);
-  digitalWrite(8, LOW);
-  digitalWrite(9, LOW);
-  digitalWrite(10, LOW);
-  digitalWrite(11, LOW);
-  digitalWrite(12, LOW);
-  digitalWrite(13, LOW);
+   for(int i=0; i < LED_TOTAL; i++){
+   
+       digitalWrite(leds_array[i], LOW);
+    }
 }
+
+void decimalAbinario_leds(int numero, int tam)
+{
+  if(numero>0 && numero <= COMBINACION){
+    
+    for(int i=0; i < tam; i++){
+    if(numero % 2 == 1){
+       digitalWrite(leds_array[i], HIGH);
+    }
+    else{
+      digitalWrite(leds_array[i], LOW);
+    }
+
+      
+    }
+  }
+}
+
+  
