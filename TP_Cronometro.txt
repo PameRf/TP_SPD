@@ -1,37 +1,39 @@
 Trabajo Practico Numero 1
 
-
-
-https://www.tinkercad.com/things/daZm0iQJ5nX-cronometrobinario/editel?sharecode=2ZNoWl87nyo042pH02TZ3UJK2IOt-mVmeetcWqgMNZ8
-
 // C++ code
 //TP 1 Cronometro Binario
-/*Al iniciar el funcionamiento, 
+//codigo en tinkercad
+//https://www.tinkercad.com/things/daZm0iQJ5nX-cronometrobinario/editel?sharecode=2ZNoWl87nyo042pH02TZ3UJK2IOt-mVmeetcWqgMNZ8
+
+//el boton inicial funciona con un click para pausar o resetear funciona manteniendo el click un tiempo
+//considerable (no funciona con simple click)
+/*Al iniciar el funcionamiento
 *el cronómetro debe estar en pausa.
 *Al presionar el botón de Pausa, se debe iniciar el cronómetro.
 Los LED apagados representan un 0, y los encendidos representan un 1
 *De presionar nuevamente, el botón de pausa, se debe detener la ejecución, teniendo en cuenta que si hubiesen transcurrido 900 milisegundos,
 al presionar el botón para continuar deberían transcurrir 100 milisegundos antes de que se enciendan los siguientes LED
 *El botón de Reset debe reiniciar el cronómetro a 0 segundos
-
-
-
 */
 //chequea el funcionamiento de los botones si estan pulsados o no, funcion antirrebote
-// si apreta reset apaga todos los leds y coloca el cronometro en 0
+// si apreta reset apaga todos los leds y coloca el cronometro en 0(para reset y pausa debe sostener un tiempo el clik con un solo click no lo toma)
 void chequearBotones(); 
-//funcio que apaga todos los leds
+//funcion que apaga todos los leds a traves del array de leds con un for
 void apagarAllLeds();
-//
-void decimalAbinario_leds(int cronometro, int LED_TOTAL);
+///paso numero decimal a contador dentro de la funcion llamo a funcion para pasar numero a binario
+/// y paso consT de array leds para prender o apagar segun ubicacion y numero bin 1 o 0
+void prenderLeds(int numero, int tam);
+//paso el numero del contador a binario representado en array del tamaño de las leds para llamarlo desde la funcion de prender leds
+void decimalAbinario_leds(int numero, int numBin[], int tam);
 
 //define para maximos, leds y delays para millis
-#define COMBINACION 1024
+#define COMBINACION 1023
 #define BOTON_RESET 2
 #define BOTON_ON_OFF 3
 #define LED_INICIO 4
 #define LED_FIN 13
 #define DELAY 100
+#define DELAYLEDS 100
 #define DELAY_CONTADOR 1000
 
 #define LED_TOTAL (LED_FIN - LED_INICIO + 1) 
@@ -73,59 +75,61 @@ void loop()
   int segundos=millis()/1000;
      
   if(millis() - estado_boton >= DELAY)
-  { 
-   
+  {    
      chequearBotones();   
      estado_boton=millis();
   
   }
-  if(!pausa){
+   if(!pausa){
     
        
     cronometro++;
     Serial.print(cronometro);
     
-    if(millis()- tiempo_Leds >= DELAY ){
+    if(millis()- tiempo_Leds >= DELAYLEDS ){
     
-    decimalAbinario_leds(cronometro,LED_TOTAL);
+    prenderLeds(cronometro,LED_TOTAL);
            
       tiempo_Leds= millis();
     }
-   if(millis()- tiempo_contador >= DELAY_CONTADOR)
+     if(millis()- tiempo_contador >= DELAY_CONTADOR){
     
       
       if(cronometro >=COMBINACION){
-        cronometro=0;
-        pausa=1;
-       decimalAbinario_leds(cronometro,LED_TOTAL);
         
+        pausa=1;
+        cronometro=0;
+        apagarAllLeds();
+        return;
       }
-   tiempo_contador=millis();
-  }
-  
-  
-  
- delay(15); 
+   
+    }
+     tiempo_contador=millis();
+   }
+ delay(15);    
 }
+    
 
-void chequearBotones() {
+
+void chequearBotones() 
+{
 
   int pulsadorResetAhora = digitalRead(BOTON_RESET);
   int PulsadorUpAhoraOn_Off= digitalRead(BOTON_ON_OFF);
 
 
-  if(PulsadorUpAhoraOn_Off && !pulsadorAntesOn_Off) // ANTIRREBOTE
+  if(PulsadorUpAhoraOn_Off && !pulsadorAntesOn_Off) 
   {
 	pausa = !pausa;
     digitalWrite(BOTON_ON_OFF,pausa);
    }
-  pulsadorAntesOn_Off= pulsadorAntesOn_Off;
+  pulsadorAntesOn_Off= PulsadorUpAhoraOn_Off;
 
-  if (pulsadorResetAhora && !pulsadorReset) //ANTIRREBOTE
+  if (pulsadorResetAhora && !pulsadorReset)
   {
-	digitalWrite(BOTON_RESET,1);
+    digitalWrite(BOTON_RESET,1);
     pausa=1;
-    cronometro = 0;
+    cronometro=0;
     apagarAllLeds();
     
   }
@@ -141,18 +145,43 @@ void apagarAllLeds()
     }
 }
 
-void decimalAbinario_leds(int numero, int tam)
+void prenderLeds(int numero, int tam)
 {
+  int numBin[tam];
+  
+  decimalAbinario_leds(numero, numBin, tam);
+  
+  if(numero>0 && numero <= COMBINACION && pausa != 1){
+    
+    for(int i=0; i < tam; i++){
+    
+      digitalWrite(leds_array[i], numBin[i]);
+      Serial.print("numero binario\n");
+      Serial.print(numBin[i]);
+       Serial.print("................");
+        
+    }
+  }
+ 
+}
+
+void decimalAbinario_leds(int numero, int numBin[], int tam)
+ {
+  numBin[tam];
+  
   if(numero>0 && numero <= COMBINACION){
     
     for(int i=0; i < tam; i++){
-    if(numero % 2 == 1){
-       digitalWrite(leds_array[i], HIGH);
+     Serial.print("numero decimal\n");
+     Serial.print(i);
+     Serial.print("................");
+    if(numero % 2 ){
+       numBin[i]=1;
     }
     else{
-      digitalWrite(leds_array[i], LOW);
-    }
-
+      numBin[i]=0;
+    } 
+      numero= numero/2;
       
     }
   }
