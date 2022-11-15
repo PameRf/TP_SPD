@@ -4,10 +4,13 @@ tinkercad:
 https://www.tinkercad.com/things/bxRBzV8kP87-tp2/editel?sharecode=478TcPuLGBM1PrzSwnnmEHeMlNt-cfyR2C2xo_f49a8
 #include <Keypad.h>
 #include <LiquidCrystal.h>
+#define SIZE 4
 
-const byte FILAS=4;
-const byte COLUMNAS=4;
-char caracteres[4][4]={
+LiquidCrystal monitor(8,13,A0,A1,A2,A3);
+
+const byte FILAS= SIZE;
+const byte COLUMNAS=SIZE;
+char caracteres[SIZE][SIZE]={
   {'1','2','3','A'},
   {'4','5','6','B'},
   {'7','8','9','C'},
@@ -23,8 +26,13 @@ Keypad miTeclado= Keypad (makeKeymap(caracteres),
 void setup()
 {
   Serial.begin(9600);
+  monitor.begin(16,2);
+  
+  monitor.setCursor(0,0);
+  
+  monitor.print("Password: ");
 }
-
+char digito=0;
 void loop()
 {
   char boton= miTeclado.getKey();
