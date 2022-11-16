@@ -5,6 +5,7 @@ https://www.tinkercad.com/things/bxRBzV8kP87-tp2/editel?sharecode=478TcPuLGBM1Pr
 #include <Keypad.h>
 #include <LiquidCrystal.h>
 #define SIZE 4
+#define TAM 6
 
 LiquidCrystal monitor(8,13,A0,A1,A2,A3);
 
@@ -17,28 +18,32 @@ char caracteres[SIZE][SIZE]={
   {'*','0','#','D'},
 };
 				
-byte pinesFilas[]={7,6,5,4};
+byte pinesFilas[SIZE]={7,6,5,4};
 				
-byte pinesColumnas[]={3,2,1,0};
+byte pinesColumnas[SIZE]={3,2,1,0};
 				
 Keypad miTeclado= Keypad (makeKeymap(caracteres), 
-                 pinesFilas, pinesColumnas, FILAS,COLUMNAS);
+                 pinesFilas, pinesColumnas, FILAS, COLUMNAS);
 void setup()
 {
-  Serial.begin(9600);
-  monitor.begin(16,2);
+   monitor.begin(16,2);
   
   monitor.setCursor(0,0);
   
   monitor.print("Password: ");
 }
-char digito=0;
+
+char *clave[TAM]={"2C2022"};
+
+  int posicion=0;
 void loop()
 {
   char boton= miTeclado.getKey();
-  
-  if(boton != NO_KEY){
-    Serial.println(boton);
+     
+    if(boton != NO_KEY){
+    monitor.setCursor(posicion,1);
+    monitor.print(boton);
+    posicion++;
   }
   delay(25); 
 }
