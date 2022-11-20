@@ -2,12 +2,23 @@ TP2_Cerradura
 
 tinkercad:
 https://www.tinkercad.com/things/bxRBzV8kP87-tp2/editel?sharecode=478TcPuLGBM1PrzSwnnmEHeMlNt-cfyR2C2xo_f49a8
+#include <stdio.h>
+#include <string.h>
 #include <Keypad.h>
 #include <LiquidCrystal.h>
-#define SIZE 4
-#define TAM 6
 
+
+#define SIZE 4
+
+int compararClaveIngresada(char clave[], char digito[], int len);
 LiquidCrystal monitor(8,13,A0,A1,A2,A3);
+
+char clave[6]={'2','C','2','0','2','2'};
+
+int posicion=0; 
+char digitos[6];
+int contadorDigitos=0;
+int respuesta;
 
 const byte FILAS= SIZE;
 const byte COLUMNAS=SIZE;
@@ -31,19 +42,36 @@ void setup()
   monitor.setCursor(0,0);
   
   monitor.print("Password: ");
+   
 }
 
-char *clave[TAM]={"2C2022"};
 
-  int posicion=0;
+
 void loop()
 {
   char boton= miTeclado.getKey();
      
+  
     if(boton != NO_KEY){
-    monitor.setCursor(posicion,1);
-    monitor.print(boton);
-    posicion++;
+         
+        monitor.setCursor(posicion,1);
+        monitor.print(boton);
+       	digitos[posicion]=boton;
+        posicion++;  
+        
+      }
+  
+  if(posicion >= 6){
+   if(strcmp(digitos,clave)== 0){
+    monitor.setCursor(0,0);
+    monitor.print("Password OK");
+     
+   }
+  
+     
   }
-  delay(25); 
-}
+    
+  
+   delay(25);    
+ }
+  
