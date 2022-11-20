@@ -13,12 +13,7 @@ https://www.tinkercad.com/things/bxRBzV8kP87-tp2/editel?sharecode=478TcPuLGBM1Pr
 int compararClaveIngresada(char clave[], char digito[], int len);
 LiquidCrystal monitor(8,13,A0,A1,A2,A3);
 
-char clave[6]={'2','C','2','0','2','2'};
 
-int posicion=0; 
-char digitos[6];
-int contadorDigitos=0;
-int respuesta;
 
 const byte FILAS= SIZE;
 const byte COLUMNAS=SIZE;
@@ -31,7 +26,7 @@ char caracteres[SIZE][SIZE]={
 				
 byte pinesFilas[SIZE]={7,6,5,4};
 				
-byte pinesColumnas[SIZE]={3,2,1,0};
+byte pinesColumnas[SIZE]={3,2,11,A5};
 				
 Keypad miTeclado= Keypad (makeKeymap(caracteres), 
                  pinesFilas, pinesColumnas, FILAS, COLUMNAS);
@@ -41,9 +36,17 @@ void setup()
   
   monitor.setCursor(0,0);
   
+  Serial.begin(9600);
+  
+  
   monitor.print("Password: ");
    
 }
+char clave[7]={'2','C','2','0','2','2','\0'};
+
+int posicion=0; 
+char digitos[7];
+
 
 
 
@@ -57,12 +60,18 @@ void loop()
         monitor.setCursor(posicion,1);
         monitor.print(boton);
        	digitos[posicion]=boton;
-        posicion++;  
+        posicion++; 
+      
+      
         
       }
   
-  if(posicion >= 6){
-   if(strcmp(digitos,clave)== 0){
+  if(posicion >=6){
+    
+    Serial.println("++++++++++++++");
+    Serial.println(digitos);
+     Serial.println("++++++++++++++");
+    if (strcmp(digitos,clave)==0){
     monitor.setCursor(0,0);
     monitor.print("Password OK");
      
@@ -71,7 +80,6 @@ void loop()
      
   }
     
-  
+ 
    delay(25);    
- }
-  
+}
