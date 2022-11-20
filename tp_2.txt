@@ -12,7 +12,11 @@ https://www.tinkercad.com/things/bxRBzV8kP87-tp2/editel?sharecode=478TcPuLGBM1Pr
 #define SIZE 4
 #define LED_VERDE 9
 #define LED_ROJO 10
-#define DELAY 20
+#define DELAY 16
+#define DELAYRED 16
+#define BOTON_TEST_PSW 11
+#define BOTON_RESET 12
+#define BOTON_CONFIG A4
 
 int compararClaveIngresada(char clave[], char digito[], int len);
 LiquidCrystal monitor(8,13,A0,A1,A2,A3);
@@ -30,7 +34,7 @@ char caracteres[SIZE][SIZE]={
 				
 byte pinesFilas[SIZE]={7,6,5,4};
 				
-byte pinesColumnas[SIZE]={3,2,11,A5};
+byte pinesColumnas[SIZE]={3,2,1,0};
 				
 Keypad miTeclado= Keypad (makeKeymap(caracteres), 
                  pinesFilas, pinesColumnas, FILAS, COLUMNAS);
@@ -40,9 +44,13 @@ void setup()
   pinMode(LED_VERDE,OUTPUT);
   pinMode(LED_ROJO,OUTPUT);
   
+  pinMode(BOTON_RESET, INPUT);
+  pinMode(BOTON_TEST_PSW, INPUT);
+  pinMode(BOTON_CONFIG, INPUT);
+  
   monitor.setCursor(0,0);
   
-  Serial.begin(9600);
+  
   
   
   monitor.print("Password: ");
@@ -53,12 +61,18 @@ char clave[7]={'2','C','2','0','2','2','\0'};
 int posicion=0; 
 char digitos[7];
 int tiempo_leds;
-
+int botonResetAntes=0;
+int botonTestAntes=0;
+int botonConfigAntes=0;
 
 
 void loop()
 {
   int segundos=millis()/1000;
+  
+  int botonResetAhora = digitalRead(BOTON_RESET);
+  int botonTestAhora= digitalRead(BOTON_TEST_PSW);
+  int botonConfigAhora= digitalRead(BOTON_CONFIG);
  
   char boton= miTeclado.getKey();
      
@@ -68,13 +82,12 @@ void loop()
         monitor.setCursor(posicion,1);
         monitor.print(boton);
        	digitos[posicion]=boton;
-        posicion++; 
-      
+        posicion++;     
       
         
       }
   
-  if(posicion >=6){
+  if(posicion >=6 || botonTestAhora == 1 ){
     
     
     if (strcmp(digitos,clave)==0){
@@ -82,17 +95,26 @@ void loop()
       monitor.print("Password OK");
       digitalWrite(LED_VERDE,HIGH); 
       if(segundos - tiempo_leds >= DELAY){
-      	digitalWrite(LED_VERDE,LOW); 
+      	
+        digitalWrite(LED_VERDE,LOW);
+      
       }
     }else{
       monitor.setCursor(0,0);
       monitor.print("Password FAIL");
       digitalWrite(LED_ROJO,HIGH);
-       if(segundos - tiempo_leds >= DELAY){
-      	digitalWrite(LED_ROJO,LOW); 
+      
+       if(segundos - tiempo_leds >= DELAYRED){
+      
+         digitalWrite(LED_ROJO,LOW); 
+        
+          
       }
+      tiempo_leds=millis();
     }
-  
+   botonTestAntes=botonTestAhora;
+   botonResetAntes= botonResetAhora;
+   botonConfigAntes= botonConfigAhora;
      
   }
     
