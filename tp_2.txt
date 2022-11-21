@@ -3,7 +3,6 @@ TP2_Cerradura
 tinkercad:
 https://www.tinkercad.com/things/bxRBzV8kP87-tp2/editel?sharecode=478TcPuLGBM1PrzSwnnmEHeMlNt-cfyR2C2xo_f49a8
 
-
 #include <stdio.h>
 #include <string.h>
 #include <Keypad.h>
@@ -87,6 +86,7 @@ void loop()
       }
 if(posicion >=6 || botonTestAhora == 1){
     
+   botonTestAhora= 0;
     
     if (strcmp(digitos,clave)==0){
       monitor.setCursor(0,0);
@@ -104,14 +104,14 @@ if(posicion >=6 || botonTestAhora == 1){
       monitor.print("Password FAIL");
       digitalWrite(LED_ROJO,HIGH);
       
-       if( botonTestAhora==1 && segundos - tiempo_leds >= DELAY){
+       if(segundos - tiempo_leds >= DELAY){
       
          digitalWrite(LED_ROJO,LOW);    
           
       }
         
     }
-     tiempo_leds=millis();
+    
    botonTestAntes=botonTestAhora;
    botonResetAntes= botonResetAhora;
    botonConfigAntes= botonConfigAhora;
@@ -122,5 +122,4 @@ if(posicion >=6 || botonTestAhora == 1){
    delay(25);    
 }
   
-    
  
