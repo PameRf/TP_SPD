@@ -25,6 +25,7 @@ https://www.tinkercad.com/things/bxRBzV8kP87-tp2/editel?sharecode=478TcPuLGBM1Pr
 #include <LiquidCrystal.h>
 
 
+
 #define SIZE 4
 #define LED_VERDE 9
 #define LED_ROJO 10
@@ -50,7 +51,7 @@ char caracteres[SIZE][SIZE]={
 				
 byte pinesFilas[SIZE]={7,6,5,4};
 				
-byte pinesColumnas[SIZE]={3,2,11,A5};
+byte pinesColumnas[SIZE]={3,2,1,0};
 				
 Keypad miTeclado= Keypad (makeKeymap(caracteres), 
                  pinesFilas, pinesColumnas, FILAS, COLUMNAS);
@@ -63,7 +64,7 @@ void setup()
   pinMode(BOTON_RESET, INPUT);
   pinMode(BOTON_TEST_PSW, INPUT);
   pinMode(BOTON_CONFIG, INPUT);
-  
+ 
   monitor.setCursor(0,0);
   
   monitor.print("Password: ");
@@ -81,15 +82,19 @@ int botonConfigAntes=0;
 int flag=0;
 int contadorDigitos;
 int estado=0;
+char buffer[7];
+int indice=0;
 
 void loop()
 {
   int segundos=millis()/1000;
+ 
   
   int botonResetAhora = digitalRead(BOTON_RESET);
   int botonTestAhora= digitalRead(BOTON_TEST_PSW);
   int botonConfigAhora= digitalRead(BOTON_CONFIG);
- 
+  
+  if(estado==0){
   char boton= miTeclado.getKey();
      
   
@@ -103,7 +108,8 @@ void loop()
      
         
       }
-if(posicion >=6 || botonTestAhora == 1){
+  }
+if((posicion >=6 || botonTestAhora == 1) && estado != 1){
     
    botonTestAhora= 0;
     
@@ -143,36 +149,43 @@ if(posicion >=6 || botonTestAhora == 1){
   }
    botonResetAntes= botonResetAhora; 
   
-  if(botonConfigAhora ==1){
-   
-  monitor.clear();
-  char buffer[7];
-  int contador=0;
+  if(botonConfigAhora ==1 || estado==1 ){
+      
+    
   monitor.setCursor(0,0);
   monitor.print("Nueva clave");
-  int tiempo;
-  int indice=0;
+  
   estado=1;
     
    if(estado==1){
 	 char tecla= miTeclado.getKey();
-		if(indice <7){
+     
+		if(tecla != NO_KEY && indice <7){
       
         monitor.setCursor(indice,1);
         monitor.print(tecla);
        	buffer[indice]=tecla;
         indice++;
-       Serial.println("entra al ingreso de teclas");
+     
  
-     tiempo=millis()/1000;     
+     //tiempo=millis()/1000;     
 	}     
 
   }
       if(indice == 6){
+        
         strcpy(clave, buffer);
+        monitor.setCursor(0,0);
         monitor.print("Clave cambiada");
+        monitor.setCursor(0,1);
+        monitor.print("       ");
         estado=0;
-        monitor.clear();
+        flag=3; 
+       
+    }
+    if (flag==3){
+       monitor.setCursor(0,0);
+       monitor.print("Password");
     }
     
   }
@@ -181,11 +194,3 @@ if(posicion >=6 || botonTestAhora == 1){
    delay(25);    
 }
   
-
-
-
-
-
-
-
-
