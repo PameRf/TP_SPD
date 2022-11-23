@@ -19,6 +19,7 @@ https://www.tinkercad.com/things/bxRBzV8kP87-tp2/editel?sharecode=478TcPuLGBM1Pr
 //
 
 
+
 #include <stdio.h>
 #include <string.h>
 #include <Keypad.h>
@@ -139,6 +140,7 @@ if((posicion >=6 || botonTestAhora == 1) && estado != 1){
          digitalWrite(LED_ROJO,LOW);    
           
       }
+  
   if(botonResetAhora == 1 ){
         
    	 monitor.clear();
@@ -180,17 +182,15 @@ if((posicion >=6 || botonTestAhora == 1) && estado != 1){
         monitor.setCursor(0,1);
         monitor.print("       ");
         estado=0;
-        flag=3; 
+        
        
     }
-    if (flag==3){
-       monitor.setCursor(0,0);
-       monitor.print("Password");
-    }
+   
     
   }
    botonConfigAntes= botonConfigAhora;
   
    delay(25);    
 }
+  
   
