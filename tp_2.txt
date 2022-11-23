@@ -82,7 +82,7 @@ int botonConfigAntes=0;
 int flag=0;
 int contadorDigitos;
 int estado=0;
-char buffer[7];/// para guardar digitos de nueva clabe
+char buffer[7];/// para guardar digitos de nueva clave
 int indice=0;
 
 void loop()
